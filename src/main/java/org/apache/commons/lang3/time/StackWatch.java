@@ -183,7 +183,7 @@ public class StackWatch {
    * </pre>
    *
    * <p>
-   *   Starting a timing, when the timing when it's parent timing is not running results in an
+   *   Starting a timing, when it's parent timing is not running results in an
    *   {@code IllegalStateException}.
    * </p>
    * <p>
