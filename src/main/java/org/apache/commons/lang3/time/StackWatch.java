@@ -104,7 +104,7 @@ public class StackWatch {
   /**
    * The name of the root node
    */
-  private String rootName;
+  private String rootName = DEFAULT_ROOT_NAME;
 
   /**
    * The root {@code TimingRecordNode}.
@@ -124,10 +124,9 @@ public class StackWatch {
    * @param rootName the root name
    */
   public StackWatch(String rootName) {
-    if (StringUtils.isEmpty(rootName)) {
-      this.rootName = DEFAULT_ROOT_NAME;
+    if (!StringUtils.isEmpty(rootName)) {
+      this.rootName = rootName;
     }
-    this.rootName = rootName;
   }
 
   /**
