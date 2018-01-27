@@ -164,7 +164,7 @@ public class StackWatchTest {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void testStartingSecondSetOfTimingsThrowsException() throws Exception{
+  public void testStartingSecondSetOfTimingsThrowsException() throws Exception {
     StackWatch watch = new StackWatch("testStackWatch");
     watch.startTiming("Test");
     functionOne(watch);
@@ -173,20 +173,20 @@ public class StackWatchTest {
     watch.startTiming("More Test");
   }
 
-  private void functionOne(StackWatch watch) throws Exception{
+  private void functionOne(StackWatch watch) throws Exception {
     watch.startTiming("One", "OneFunc");
     Thread.sleep(50);
     functionOneOne(watch);
     watch.stopTiming();
   }
 
-  private void functionOneCloseParent(StackWatch watch) throws Exception{
+  private void functionOneCloseParent(StackWatch watch) throws Exception {
     watch.startTiming("One", "OneFunc");
     Thread.sleep(50);
     watch.visit(new TimingRecordNodeVisitor() {
       @Override
       public void visitRecord(int level, TimingRecordNode node) {
-          node.getStopWatch().stop();
+        node.getStopWatch().stop();
       }
     });
     functionOneOne(watch);

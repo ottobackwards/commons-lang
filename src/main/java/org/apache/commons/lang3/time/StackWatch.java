@@ -84,10 +84,9 @@ import org.apache.commons.lang3.StringUtils;
  *
  *
  * <p>
- *   This class is not thread safe, and is meant to track timings across multiple calls on the same
- *   thread
+ * This class is not thread safe, and is meant to track timings across multiple calls on the same
+ * thread
  * </p>
- *
  */
 public class StackWatch {
 
@@ -118,9 +117,10 @@ public class StackWatch {
    * Constructor
    * </p>
    * <p>
-   *   The top most timing will be created with the rootName on {@link StackWatch#start()} ()}
+   * The top most timing will be created with the rootName on {@link StackWatch#start()} ()}
    * </p>
    * If the passed name is empty, the DEFAULT_ROOT_NAME {@value DEFAULT_ROOT_NAME} will be used.
+   *
    * @param rootName the root name
    */
   public StackWatch(String rootName) {
@@ -131,19 +131,20 @@ public class StackWatch {
 
   /**
    * <p>
-   *   Starts the {@code StackWatch}.
+   * Starts the {@code StackWatch}.
    * </p>
    * <p>
-   *   A root timing will be created named for the rootName and started.
+   * A root timing will be created named for the rootName and started.
    * </p>
    * <p>
-   *   If not called before the first {@link  StackWatch#startTiming(String, String...)} call, then the {@code StackWatch} will
-   *   be started at that time.
+   * If not called before the first {@link  StackWatch#startTiming(String, String...)} call, then the {@code StackWatch} will
+   * be started at that time.
    * </p>
+   *
    * @throws IllegalStateException if the {@code StackWatch} has already been started.
    */
   public void start() {
-    if(rootNode != null) {
+    if (rootNode != null) {
       throw new IllegalStateException("StackWatch has already been started");
     }
     rootNode = new TimingRecordNode(null, rootName);
@@ -182,12 +183,12 @@ public class StackWatch {
    * </pre>
    *
    * <p>
-   *   Starting a timing, when it's parent timing is not running results in an
-   *   {@code IllegalStateException}.
+   * Starting a timing, when it's parent timing is not running results in an
+   * {@code IllegalStateException}.
    * </p>
    * <p>
-   *   For example, this code, although contrived, would throw an {@code IllegalStateException}, because
-   *   functionOne is not running:
+   * For example, this code, although contrived, would throw an {@code IllegalStateException}, because
+   * functionOne is not running:
    * </p>
    * <pre>
    *   {@code
@@ -213,11 +214,11 @@ public class StackWatch {
    * </pre>
    *
    * <p>
-   *   Starting a timing, when some number of timings have been started and all closed results in an
-   *   {@code IllegalStateException}.
+   * Starting a timing, when some number of timings have been started and all closed results in an
+   * {@code IllegalStateException}.
    * </p>
    * <p>
-   *   For example:
+   * For example:
    * </p>
    * <pre>
    *   {@code
@@ -231,7 +232,6 @@ public class StackWatch {
    *   }
    * </pre>
    *
-   *
    * @param name the name of this timing
    * @param tags the tags to associate with this timing
    * @throws IllegalStateException if the parent timing is not running or there is an attempt to start
@@ -244,12 +244,12 @@ public class StackWatch {
     TimingRecordNode parentNode = null;
     if (deque.isEmpty()) {
       // create, add, and start the root node
-      if(rootNode == null) {
+      if (rootNode == null) {
         start();
         parentNode = rootNode;
       } else {
-        throw new IllegalStateException("Attempting to start a second set of timings, StackWatch must" +
-        " be cleared first");
+        throw new IllegalStateException(
+            "Attempting to start a second set of timings, StackWatch must" + " be cleared first");
       }
     } else {
       // if the current node is not running, then this is an InvalidStateException, as the parent
@@ -272,16 +272,17 @@ public class StackWatch {
 
   /**
    * <p>
-   *  Stop the current timing.
+   * Stop the current timing.
    * </p>
    * <p>
-   *  In the case of nested timings, the current timing is stopped and removed from the {@code Deque}
-   *  causing the parent node to be the top of the stack.
+   * In the case of nested timings, the current timing is stopped and removed from the {@code Deque}
+   * causing the parent node to be the top of the stack.
    * </p>
    * <p>
-   *  If the timing being stopped has running child timings an {@code IllegalStateException} will
-   *  be thrown.
+   * If the timing being stopped has running child timings an {@code IllegalStateException} will
+   * be thrown.
    * </p>
+   *
    * @throws IllegalStateException if stopping a timing with running child timings
    */
   public void stopTiming() {
@@ -293,10 +294,11 @@ public class StackWatch {
 
   /**
    * Stops the {@code StackWatch}.
+   *
    * @throws IllegalStateException if there are running timings other than the root timing
    */
   public void stop() {
-    if(deque.size() > 1) {
+    if (deque.size() > 1) {
       throw new IllegalStateException("Stopping with running timings");
     }
     stopTiming();
@@ -318,6 +320,7 @@ public class StackWatch {
    * The {@code TimingRecordNodeVisitor} will be called back for each node in the tree, will be
    * passed the level of the node in the tree.  The root level is 0.
    * </p>
+   *
    * @param visitor callback interface.
    */
   public void visit(TimingRecordNodeVisitor visitor) {

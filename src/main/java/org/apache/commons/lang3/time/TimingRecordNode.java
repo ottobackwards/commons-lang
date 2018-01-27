@@ -65,6 +65,7 @@ public class TimingRecordNode {
    * <p>
    * Creates a new TimingRecordNode for a given parent name, with a given name.
    * </p>
+   *
    * @param parentTimingPath the path of the parent, may be null
    * @param timingName the name of the timing
    * @param tags the tags to associate with this timing
@@ -86,6 +87,7 @@ public class TimingRecordNode {
   /**
    * Returns the node's parent's path.
    * The parent node path may be null
+   *
    * @return the parent node path
    */
   public String getParentPath() {
@@ -94,6 +96,7 @@ public class TimingRecordNode {
 
   /**
    * Returns the node's timing name.
+   *
    * @return the node timing name
    */
   public String getTimingName() {
@@ -102,6 +105,7 @@ public class TimingRecordNode {
 
   /**
    * Return if the node's StopWatch is running.
+   *
    * @return true if it is running, false if not
    */
   public boolean isRunning() {
@@ -112,18 +116,19 @@ public class TimingRecordNode {
    * Starts the StopWatch.
    */
   public void start() {
-    if(!stopWatch.isStarted()) {
+    if (!stopWatch.isStarted()) {
       stopWatch.start();
     }
   }
 
   /**
    * <p>
-   *  Stops the StopWatch.
+   * Stops the StopWatch.
    * </p>
    * <p>
-   *  If this node has running children, an {@code IllegalStateException} will result.
+   * If this node has running children, an {@code IllegalStateException} will result.
    * </p>
+   *
    * @throws IllegalStateException if stop is called on a node with running children
    */
   public void stop() {
@@ -137,6 +142,7 @@ public class TimingRecordNode {
 
   /**
    * Returns the {@code StopWatch} for this node.
+   *
    * @return {@code StopWatch}
    */
   public StopWatch getStopWatch() {
@@ -145,10 +151,11 @@ public class TimingRecordNode {
 
   /**
    * The tags associated with this timing.
+   *
    * @return tags array
    */
   public String[] getTags() {
-    return tags == null? new String[]{} : ArrayUtils.clone(tags);
+    return tags == null ? new String[]{} : ArrayUtils.clone(tags);
   }
 
 
@@ -158,6 +165,7 @@ public class TimingRecordNode {
    * <p>
    * If the parent path is null, then the name only is returned.
    * </p>
+   *
    * @return the path as String
    */
   public String getPath() {
@@ -169,6 +177,7 @@ public class TimingRecordNode {
 
   /**
    * Returns the child nodes of this node.
+   *
    * @return Iterable of the child nodes.
    */
   public Iterable<TimingRecordNode> getChildren() {
@@ -179,13 +188,15 @@ public class TimingRecordNode {
    * Creates a new child node to this node.
    * If the current node is not started, then this operation results in an
    * {@code IllegalStateException}
+   *
    * @param childName the name of the child
    * @param tags the tags for this timing
    * @return the child node created
    * @throws IllegalStateException if the current node is not started.
    * @throws IllegalArgumentException if the node name is null or empty.
    */
-  public TimingRecordNode createChild(String childName, String... tags) throws IllegalStateException {
+  public TimingRecordNode createChild(String childName, String... tags)
+      throws IllegalStateException {
     if (!stopWatch.isStarted()) {
       throw new IllegalStateException("Adding a child to a non-started parent");
     }
@@ -198,6 +209,7 @@ public class TimingRecordNode {
    * Visits the current node and each of it's children in turn.
    * The provided {@code TimingRecordNodeVisitor} will be called this node, and passed to each
    * child node in descent.
+   *
    * @param level The level of this node.
    * @param visitor the visitor callback
    */

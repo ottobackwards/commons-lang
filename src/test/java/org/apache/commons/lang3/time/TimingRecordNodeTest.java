@@ -21,24 +21,25 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TimingRecordNodeTest {
+
   static final String PARENT_PATH = "topFunction/levelOneFunction";
   static final String NODE_NAME = "testFunction";
-  static final String NODE_PATH = String.format("%s/%s",PARENT_PATH,NODE_NAME);
+  static final String NODE_PATH = String.format("%s/%s", PARENT_PATH, NODE_NAME);
 
   @Test
-  public void testNullParentDoesNotThrowException(){
-    TimingRecordNode theNode = new TimingRecordNode(null,NODE_NAME);
+  public void testNullParentDoesNotThrowException() {
+    TimingRecordNode theNode = new TimingRecordNode(null, NODE_NAME);
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testNullNameThrowsException(){
-    TimingRecordNode theNode = new TimingRecordNode(null,null);
+  public void testNullNameThrowsException() {
+    TimingRecordNode theNode = new TimingRecordNode(null, null);
   }
 
   @Test
   public void testGetParentName() throws Exception {
     TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
-    Assert.assertEquals(PARENT_PATH,theNode.getParentPath());
+    Assert.assertEquals(PARENT_PATH, theNode.getParentPath());
   }
 
   @Test
@@ -81,7 +82,7 @@ public class TimingRecordNodeTest {
   @Test
   public void testGetPathNoParent() throws Exception {
     TimingRecordNode theNode = new TimingRecordNode(null, NODE_NAME);
-    Assert.assertEquals(NODE_NAME,theNode.getPath());
+    Assert.assertEquals(NODE_NAME, theNode.getPath());
   }
 
   @Test
@@ -102,7 +103,8 @@ public class TimingRecordNodeTest {
   public void testChildPath() throws Exception {
     TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
     theNode.start();
-    Assert.assertEquals(theNode.createChild("child").getPath(),String.format("%s/%s",NODE_PATH,"child"));
+    Assert.assertEquals(theNode.createChild("child").getPath(),
+        String.format("%s/%s", NODE_PATH, "child"));
   }
 
   @Test
@@ -113,10 +115,10 @@ public class TimingRecordNodeTest {
     theNode.visit(0, new TimingRecordNodeVisitor() {
       @Override
       public void visitRecord(int level, TimingRecordNode node) {
-        if(level == 0) {
-          Assert.assertEquals(node.getTimingName(),NODE_NAME);
-        } else if(level == 1) {
-          Assert.assertEquals(node.getTimingName(),"child");
+        if (level == 0) {
+          Assert.assertEquals(node.getTimingName(), NODE_NAME);
+        } else if (level == 1) {
+          Assert.assertEquals(node.getTimingName(), "child");
         } else {
           throw new IllegalStateException("Invalid node level");
         }
