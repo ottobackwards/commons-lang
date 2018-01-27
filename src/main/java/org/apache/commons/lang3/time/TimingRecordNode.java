@@ -17,7 +17,8 @@
 
 package org.apache.commons.lang3.time;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +52,7 @@ public class TimingRecordNode {
     /**
      * The child nodes of this node.
      */
-    private List<TimingRecordNode> children = new LinkedList<>();
+    private List<TimingRecordNode> children = new ArrayList<>();
 
     /**
      * The {@code StopWatch} for this node.
@@ -181,7 +182,7 @@ public class TimingRecordNode {
      * @return Iterable of the child nodes.
      */
     public Iterable<TimingRecordNode> getChildren() {
-        return children;
+        return Collections.unmodifiableList(children);
     }
 
     /**
