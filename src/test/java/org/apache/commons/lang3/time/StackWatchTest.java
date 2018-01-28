@@ -21,9 +21,96 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 public class StackWatchTest {
+
+    @Test
+    public void start() {
+        final StopWatch stopWatch = new StopWatch();
+        StackWatch watch = new StackWatch("testStackWatch");
+        watch.start();
+        stopWatch.start();
+        stopWatch.stop();
+        watch.stop();
+        watch.visit(new TimingRecordNodeVisitor() {
+            @Override
+            public void visitRecord(int level, TimingRecordNode node) {
+                Assert.assertTrue(node.getStopWatch().getNanoTime() > stopWatch.getNanoTime());
+            }
+        });
+    }
+
+    @Test
+    public void startTiming() {
+        final StopWatch stopWatch = new StopWatch();
+        StackWatch watch = new StackWatch("testStackWatch");
+        watch.start();
+        watch.startTiming("one");
+        stopWatch.start();
+        stopWatch.stop();
+        watch.stopTiming();
+        watch.stop();
+        watch.visit(new TimingRecordNodeVisitor() {
+            @Override
+            public void visitRecord(int level, TimingRecordNode node) {
+                if(level > 0) {
+                    Assert.assertTrue(node.getStopWatch().getNanoTime() > stopWatch.getNanoTime());
+                }
+            }
+        });
+    }
+
+    @Test
+    public void stopTiming() throws Exception {
+        StackWatch watch = new StackWatch("testStackWatch");
+        watch.start();
+        watch.startTiming("one");
+        Thread.sleep(100);
+        watch.stopTiming();
+        watch.stop();
+        final ArrayList<Long> times = new ArrayList<>();
+        watch.visit(new TimingRecordNodeVisitor() {
+            @Override
+            public void visitRecord(int level, TimingRecordNode node) {
+                if(level > 0) {
+                    times.add(node.getStopWatch().getNanoTime());
+                }
+            }
+        });
+
+        watch.visit(new TimingRecordNodeVisitor() {
+            @Override
+            public void visitRecord(int level, TimingRecordNode node) {
+                if(level > 0) {
+                    times.add(node.getStopWatch().getNanoTime());
+                }
+            }
+        });
+
+        Assert.assertEquals(times.size(), 2);
+        Assert.assertEquals(times.get(0), times.get(1));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void stopWithoutStopTimingThrowsException() {
+        StackWatch watch = new StackWatch("testStackWatch");
+        watch.start();
+        watch.startTiming("one");
+        watch.stop();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void clearBeforeStopThrowsException() {
+        StackWatch watch = new StackWatch("testStackWatch");
+        watch.start();
+        watch.startTiming("one");
+        watch.stopTiming();
+        watch.clear();
+        watch.stop();
+    }
 
     @Test
     public void testStackWatch() throws Exception {
