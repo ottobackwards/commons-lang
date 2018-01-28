@@ -47,7 +47,6 @@ import java.util.LinkedList;
  * The {@code TimeRecordNodes} provide a tree structure in support of nesting.
  * A {@code Deque} is use to track the current time node.
  * </p>
- * <p>
  * <pre>
  *   {@code
  *    private void outerFunction() {
@@ -82,8 +81,6 @@ import java.util.LinkedList;
  *    }
  *   }
  * </pre>
- * <p>
- * <p>
  * <p>
  * This class is not thread safe, and is meant to track timings across multiple calls on the same
  * thread
@@ -205,7 +202,6 @@ public class StackWatch {
      *   }
      * </pre>
      * <p>
-     * <p>
      * Starting a timing, when it's parent timing is not running results in an
      * {@code IllegalStateException}.
      * </p>
@@ -235,7 +231,6 @@ public class StackWatch {
      *    }
      *   }
      * </pre>
-     * <p>
      * <p>
      * Starting a timing, when some number of timings have been started and all closed results in an
      * {@code IllegalStateException}.
