@@ -48,7 +48,7 @@ import java.util.LinkedList;
  * A {@code Deque} is use to track the current time node.
  * </p>
  * <pre>
- *   {@code
+ *   <code>
  *    private void outerFunction() {
  *      try {
  *        StackWatch watch = new StackWatch("OuterFunction");
@@ -56,7 +56,7 @@ import java.util.LinkedList;
  *        functionOne();
  *        watch.stop();
  *        watch.visit(new TimingRecordNodeVisitor() {
- *          {@literal @}Override
+ *         {@literal @}Override
  *          public void visitRecord(int level, TimingRecordNode node) {
  *            ...
  *          }
@@ -79,7 +79,7 @@ import java.util.LinkedList;
  *      watch.startTiming("OneTwo", "OneFunc");
  *      watch.stopTiming();
  *    }
- *   }
+ *   </code>
  * </pre>
  * <p>
  * This class is not thread safe, and is meant to track timings across multiple calls on the same
@@ -210,11 +210,11 @@ public class StackWatch {
      * functionOne is not running:
      * </p>
      * <pre>
-     *   {@code
+     *   <code>
      *    private void functionOne(StackWatch watch) throws Exception {
      *      watch.startTiming("One", "OneFunc");
      *      watch.visit(new TimingRecordNodeVisitor() {
-     *        {@literal @}Override
+     *       {@literal @}Override
      *        public void visitRecord(int level, TimingRecordNode node) {
      *          if(level == 0) {
      *            node.getStopWatch().stop();
@@ -229,7 +229,7 @@ public class StackWatch {
      *      functionOneTwo(watch);
      *      watch.stopTiming();
      *    }
-     *   }
+     *   </code>
      * </pre>
      * <p>
      * Starting a timing, when some number of timings have been started and all closed results in an
