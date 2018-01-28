@@ -68,6 +68,14 @@ public class TimingRecordNodeTest {
     }
 
     @Test
+    public void testStartStart() {
+        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        theNode.start();
+        theNode.start();
+        Assert.assertTrue(theNode.isRunning());
+    }
+
+    @Test
     public void testStop() {
         TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
         theNode.start();
@@ -147,6 +155,14 @@ public class TimingRecordNodeTest {
         String[] tags = theNode.getTags();
         Assert.assertNotNull(tags);
         Assert.assertEquals(tags.length,2);
+    }
+
+    @Test
+    public void getTagsWithNoTags() {
+        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        String[] tags = theNode.getTags();
+        Assert.assertNotNull(tags);
+        Assert.assertEquals(tags.length,0);
     }
 
     @Test

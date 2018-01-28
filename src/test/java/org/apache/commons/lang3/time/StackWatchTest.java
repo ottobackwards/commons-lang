@@ -28,6 +28,11 @@ import org.junit.Test;
 public class StackWatchTest {
 
     @Test
+    public void testRootNameEmptyConstructor(){
+        StackWatch watch = new StackWatch();
+        Assert.assertEquals(watch.DEFAULT_ROOT_NAME, watch.getRootName());
+    }
+    @Test
     public void testRootName() {
         StackWatch watch = new StackWatch(null);
         Assert.assertEquals(watch.DEFAULT_ROOT_NAME, watch.getRootName());
