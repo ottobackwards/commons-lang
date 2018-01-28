@@ -159,7 +159,6 @@ public class TimingRecordNode {
         return tags == null ? new String[]{} : ArrayUtils.clone(tags);
     }
 
-
     /**
      * Returns the node's path, made up by combining it's parent's name and the node's name.
      * The path is '/' delimited.
