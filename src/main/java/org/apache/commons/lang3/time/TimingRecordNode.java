@@ -156,7 +156,9 @@ public class TimingRecordNode {
      * @return tags array
      */
     public String[] getTags() {
-        return tags == null ? new String[]{} : ArrayUtils.clone(tags);
+        // variable parameters are never null
+        // no need for null check here
+        return ArrayUtils.clone(tags);
     }
 
     /**
