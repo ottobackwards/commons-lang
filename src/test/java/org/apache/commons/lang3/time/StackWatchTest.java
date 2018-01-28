@@ -28,6 +28,12 @@ import org.junit.Test;
 public class StackWatchTest {
 
     @Test
+    public void testRootName() {
+        StackWatch watch = new StackWatch(null);
+        Assert.assertEquals(watch.DEFAULT_ROOT_NAME, watch.getRootName());
+    }
+
+    @Test
     public void start() {
         final StopWatch stopWatch = new StopWatch();
         StackWatch watch = new StackWatch("testStackWatch");
@@ -41,6 +47,14 @@ public class StackWatchTest {
                 Assert.assertTrue(node.getStopWatch().getNanoTime() > stopWatch.getNanoTime());
             }
         });
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testStartASecondTimeThrowsException() {
+        StackWatch watch = new StackWatch("testStackWatch");
+        watch.start();
+        watch.stop();
+        watch.start();
     }
 
     @Test

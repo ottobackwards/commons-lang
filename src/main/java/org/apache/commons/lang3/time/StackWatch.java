@@ -17,9 +17,10 @@
 
 package org.apache.commons.lang3.time;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Deque;
 import java.util.LinkedList;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * <p>
@@ -46,7 +47,7 @@ import org.apache.commons.lang3.StringUtils;
  * The {@code TimeRecordNodes} provide a tree structure in support of nesting.
  * A {@code Deque} is use to track the current time node.
  * </p>
- *
+ * <p>
  * <pre>
  *   {@code
  *    private void outerFunction() {
@@ -81,8 +82,8 @@ import org.apache.commons.lang3.StringUtils;
  *    }
  *   }
  * </pre>
- *
- *
+ * <p>
+ * <p>
  * <p>
  * This class is not thread safe, and is meant to track timings across multiple calls on the same
  * thread
@@ -127,6 +128,28 @@ public class StackWatch {
         if (!StringUtils.isEmpty(rootName)) {
             this.rootName = rootName;
         }
+    }
+
+    /**
+     * <p>
+     * Constructor
+     * </p>
+     * <p>
+     * The DEFAULT_ROOT_NAME {@value DEFAULT_ROOT_NAME} will be used.
+     * </p>
+     */
+    public StackWatch() {
+    }
+
+    /**
+     * <p>
+     * Returns the root name.
+     * </p>
+     *
+     * @return the root name.
+     */
+    public String getRootName() {
+        return this.rootName;
     }
 
     /**
@@ -181,7 +204,7 @@ public class StackWatch {
      *    }
      *   }
      * </pre>
-     *
+     * <p>
      * <p>
      * Starting a timing, when it's parent timing is not running results in an
      * {@code IllegalStateException}.
@@ -212,7 +235,7 @@ public class StackWatch {
      *    }
      *   }
      * </pre>
-     *
+     * <p>
      * <p>
      * Starting a timing, when some number of timings have been started and all closed results in an
      * {@code IllegalStateException}.
@@ -235,13 +258,13 @@ public class StackWatch {
      * @param name the name of this timing
      * @param tags the tags to associate with this timing
      * @throws IllegalStateException if the parent timing is not running or there is an attempt to start
-     * a new timing after creating a number of timings and closing them all.
+     *                               a new timing after creating a number of timings and closing them all.
      */
     public void startTiming(String name, String... tags) {
         // If the deque is empty, then the root needs to be added and started, unless it already exists.
         // This means that all the timings where closed and a new timing was started.
         // If this happens, it is an IllegalStateException
-        TimingRecordNode parentNode = null;
+        TimingRecordNode parentNode;
         if (deque.isEmpty()) {
             // create, add, and start the root node
             if (rootNode == null) {
@@ -249,8 +272,8 @@ public class StackWatch {
                 parentNode = rootNode;
             } else {
                 throw new IllegalStateException(
-                    "Attempting to start a second set of timings, StackWatch must"
-                        + " be cleared first");
+                        "Attempting to start a second set of timings, StackWatch must"
+                                + " be cleared first");
             }
         } else {
             // if the current node is not running, then this is an InvalidStateException, as the parent
@@ -260,7 +283,7 @@ public class StackWatch {
                 parentNode = deque.peek();
             } else {
                 throw new IllegalStateException(String
-                    .format("Parent TimingRecordNode %s is not running", deque.peek().getPath()));
+                        .format("Parent TimingRecordNode %s is not running", deque.peek().getPath()));
             }
         }
 
@@ -289,7 +312,7 @@ public class StackWatch {
     public void stopTiming() {
         if (deque.isEmpty()) {
             throw new IllegalStateException(
-                "Trying to stop time, there are no running records in deque");
+                    "Trying to stop time, there are no running records in deque");
         }
         deque.pop().stop();
     }
