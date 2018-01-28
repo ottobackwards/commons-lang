@@ -83,7 +83,6 @@ public class TimingRecordNodeTest {
         theNode.stop();
     }
 
-
     @Test
     public void testGetPath() {
         TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
@@ -102,7 +101,6 @@ public class TimingRecordNodeTest {
         theNode.start();
         Assert.assertNotNull(theNode.createChild("child"));
     }
-
 
     @Test(expected = IllegalStateException.class)
     public void testCreateChildWhenNotStartedThrowsException() {
@@ -163,5 +161,4 @@ public class TimingRecordNodeTest {
         }
         Assert.assertEquals(count,1);
     }
-
 }
