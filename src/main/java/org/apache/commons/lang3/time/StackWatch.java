@@ -28,13 +28,13 @@ import java.util.LinkedList;
  * possibly nested named timings.
  * </p>
  * <p>
- * While the {@code StopWatch} provides functionality to time the length of operations, there is no
+ * While the {@link StopWatch} provides functionality to time the length of operations, there is no
  * context or name to go with the time tracked. It is also not possible to time nested calls with
  * the {@code StopWatch}.
  * </p>
  * <p>
- * {@code StackWatch} provides that functionality, allowing successive calls to {@link StackWatch#startTiming(String, String...)} to track
- * nested calls.
+ * {@code StackWatch} provides that functionality, allowing successive calls to
+ * {@link StackWatch#startTiming(String, String...)} to track nested calls.
  * </p>
  * <p>
  * Each start provides a timing name and a parent timing name, thus providing context to the timing.
@@ -53,16 +53,17 @@ import java.util.LinkedList;
  *      try {
  *        StackWatch watch = new StackWatch("OuterFunction");
  *        watch.start();
- *        functionOne();
+ *        functionOne(watch);
  *        watch.stop();
  *        watch.visit(new TimingRecordNodeVisitor() {
  *         {@literal @}Override
  *          public void visitRecord(int level, TimingRecordNode node) {
- *            ...
+ *            System.out.println("Visit level " + level + " node: " + node.getPath());
  *          }
  *        });
  *      } catch (Exception e){}
  *    }
+ *
  *    private void functionOne(StackWatch watch) throws Exception {
  *      watch.startTiming("One", "OneFunc");
  *      functionOneOne(watch);
@@ -82,9 +83,22 @@ import java.util.LinkedList;
  *   </code>
  * </pre>
  * <p>
+ * The example above would result in the following output.
+ * </p>
+ * <pre>
+ *   <code>
+ *    Visit level 0 node: OuterFunction
+ *    Visit level 1 node: OuterFunction/One
+ *    Visit level 2 node: OuterFunction/One/OneOne
+ *    Visit level 3 node: OuterFunction/One/OneOne/OneTwo
+ *   </code>
+ * </pre>
+ * <p>
  * This class is not thread safe, and is meant to track timings across multiple calls on the same
  * thread
  * </p>
+ *
+ * @since 3.8
  */
 public class StackWatch {
 
@@ -157,8 +171,8 @@ public class StackWatch {
      * A root timing will be created named for the rootName and started.
      * </p>
      * <p>
-     * If not called before the first {@link  StackWatch#startTiming(String, String...)} call, then the {@code StackWatch} will
-     * be started at that time.
+     * If not called before the first {@link  StackWatch#startTiming(String, String...)} call, then the
+     * {@code StackWatch} will be started at that time.
      * </p>
      *
      * @throws IllegalStateException if the {@code StackWatch} has already been started.
@@ -182,7 +196,7 @@ public class StackWatch {
      * for example:
      * </p>
      * <pre>
-     *   {@code
+     *   <code>
      *    private void functionOne(StackWatch watch) throws Exception {
      *      watch.startTiming("One", "OneFunc");
      *      functionOneOne(watch);
@@ -199,7 +213,7 @@ public class StackWatch {
      *      watch.startTiming("OneTwo", "OneFunc");
      *      watch.stopTiming();
      *    }
-     *   }
+     *   </code>
      * </pre>
      * <p>
      * Starting a timing, when it's parent timing is not running results in an
@@ -239,15 +253,13 @@ public class StackWatch {
      * For example:
      * </p>
      * <pre>
-     *   {@code
-     *
+     *  <code>
      *    StackWatch watch = new StackWatch("testStackWatch");
      *    watch.startTiming("Test");
      *    functionOne(watch);
      *    watch.stopTiming();
      *    watch.startTiming("More Test");
-     *
-     *   }
+     *  </code>
      * </pre>
      *
      * @param name the name of this timing
@@ -256,30 +268,28 @@ public class StackWatch {
      *                               a new timing after creating a number of timings and closing them all.
      */
     public void startTiming(String name, String... tags) {
-        // If the deque is empty, then the root needs to be added and started, unless it already exists.
-        // This means that all the timings where closed and a new timing was started.
-        // If this happens, it is an IllegalStateException
-        TimingRecordNode parentNode;
+        final TimingRecordNode parentNode;
+        // If the deque is empty, then the root needs to be added and started
         if (deque.isEmpty()) {
-            // create, add, and start the root node
-            if (rootNode == null) {
-                start();
-                parentNode = rootNode;
-            } else {
+            // If it already exists, it means that all the timings were closed and a new timing was started.
+            // If this happens, it will result in an IllegalStateException
+            if (rootNode != null) {
                 throw new IllegalStateException(
                         "Attempting to start a second set of timings, StackWatch must"
                                 + " be cleared first");
             }
+            // create, add, and start the root node
+            start();
+            parentNode = rootNode;
         } else {
             // if the current node is not running, then this is an InvalidStateException, as the parent
             // cannot close before it's children
-            if (deque.peek().isRunning()) {
-                // this is a nested start, add as child to current running
-                parentNode = deque.peek();
-            } else {
+            if (!deque.peek().isRunning()) {
                 throw new IllegalStateException(String
                         .format("Parent TimingRecordNode %s is not running", deque.peek().getPath()));
             }
+            // this is a nested start, add as child to current running
+            parentNode = deque.peek();
         }
 
         // request the current node to create a new child with this timing name and start it
@@ -337,8 +347,8 @@ public class StackWatch {
      * Initiate the visitation of the nodes in this timing.
      * </p>
      * <p>
-     * The {@code TimingRecordNodeVisitor} will be called back for each node in the tree, will be
-     * passed the level of the node in the tree.  The root level is 0.
+     * The {@code TimingRecordNodeVisitor} will be called back for each node in the tree, and will
+     * pass the level of the node in the tree. The root level is 0.
      * </p>
      *
      * @param visitor callback interface.
