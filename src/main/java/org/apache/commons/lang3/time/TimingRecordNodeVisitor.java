@@ -18,7 +18,9 @@
 package org.apache.commons.lang3.time;
 
 /**
- * Visitor for decent through a TimingRecordNode tree.
+ * Visitor for descent through a {@link TimingRecordNode} tree.
+ *
+ * @since 3.8
  */
 public interface TimingRecordNodeVisitor {
 

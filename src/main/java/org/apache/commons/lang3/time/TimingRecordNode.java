@@ -26,6 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * The tree node to track time and children.
  * The {@code StopWatch} class is used for timings
+ *
+ * @since 3.8
  */
 public class TimingRecordNode {
 
@@ -162,10 +164,10 @@ public class TimingRecordNode {
     }
 
     /**
-     * Returns the node's path, made up by combining it's parent's name and the node's name.
+     * Returns the node's path, made up by combining its parent's name and the node's name.
      * The path is '/' delimited.
      * <p>
-     * If the parent path is null, then the name only is returned.
+     * If the parent path is null, then only the name of the timing is returned.
      * </p>
      *
      * @return the path as String
@@ -208,11 +210,11 @@ public class TimingRecordNode {
     }
 
     /**
-     * Visits the current node and each of it's children in turn.
+     * Visits the current node and each of its children in turn.
      * The provided {@code TimingRecordNodeVisitor} will be called this node, and passed to each
      * child node in descent.
      *
-     * @param level The level of this node.
+     * @param level the level of this node.
      * @param visitor the visitor callback
      */
     protected void visit(int level, TimingRecordNodeVisitor visitor) {
