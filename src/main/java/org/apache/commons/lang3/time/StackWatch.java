@@ -136,7 +136,7 @@ public class StackWatch {
      * @param rootName the root name
      */
     public StackWatch(String rootName) {
-        if (!StringUtils.isEmpty(rootName)) {
+        if (!StringUtils.isBlank(rootName)) {
             this.rootName = rootName;
         }
     }

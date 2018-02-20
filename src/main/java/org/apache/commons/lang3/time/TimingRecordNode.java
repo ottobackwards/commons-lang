@@ -72,15 +72,15 @@ class TimingRecordNode {
      * @param parentTimingPath the path of the parent, may be null
      * @param timingName the name of the timing
      * @param tags the tags to associate with this timing
-     * @throws IllegalArgumentException if the timingName is null or empty.
+     * @throws IllegalArgumentException if the timingName is null,empty or blank.
      */
-    public TimingRecordNode(String parentTimingPath, String timingName, String... tags) {
-        if (StringUtils.isEmpty(timingName)) {
+    TimingRecordNode(String parentTimingPath, String timingName, String... tags) {
+        if (StringUtils.isBlank(timingName)) {
             throw new IllegalArgumentException("Argument name is missing");
         }
         this.timingName = timingName;
 
-        if (StringUtils.isNotEmpty(parentTimingPath)) {
+        if (StringUtils.isNotBlank(parentTimingPath)) {
             this.parentTimingPath = parentTimingPath;
         }
 
