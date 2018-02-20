@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @since 3.8
  */
-class TimingRecordNode {
+public class TimingRecordNode {
 
     /**
      * The format String for creating paths.
@@ -74,7 +74,7 @@ class TimingRecordNode {
      * @param tags the tags to associate with this timing
      * @throws IllegalArgumentException if the timingName is null,empty or blank.
      */
-    TimingRecordNode(String parentTimingPath, String timingName, String... tags) {
+    public TimingRecordNode(String parentTimingPath, String timingName, String... tags) {
         if (StringUtils.isBlank(timingName)) {
             throw new IllegalArgumentException("Argument name is missing");
         }
