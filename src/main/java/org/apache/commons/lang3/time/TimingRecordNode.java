@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @since 3.8
  */
-public class TimingRecordNode {
+class TimingRecordNode {
 
     /**
      * The format String for creating paths.

@@ -230,9 +230,7 @@ public class StackWatch {
      *      watch.visit(new TimingRecordNodeVisitor() {
      *       {@literal @}Override
      *        public void visitRecord(int level, TimingRecordNode node) {
-     *          if(level == 0) {
-     *            node.getStopWatch().stop();
-     *          }
+     *          node.getStopWatch().stop();
      *        }
      *      });
      *      functionOneOne(watch);
@@ -258,6 +256,7 @@ public class StackWatch {
      *    watch.startTiming("Test");
      *    functionOne(watch);
      *    watch.stopTiming();
+     *    watch.stop();
      *    watch.startTiming("More Test");
      *  </code>
      * </pre>
