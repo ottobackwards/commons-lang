@@ -22,7 +22,7 @@ package org.apache.commons.lang3.time;
  *
  * @since 3.8
  */
-public interface TimingRecordNodeVisitor {
+public interface TimingRecordNodeVisitor<T> {
 
     /**
      * Visit a {@code TimingRecordNode}.
@@ -30,5 +30,5 @@ public interface TimingRecordNodeVisitor {
      * @param level the depth level of this node
      * @param node the {@code TimingRecordNode}
      */
-    void visitRecord(int level, TimingRecordNode node);
+    void visitRecord(int level, TimingRecordNode<T> node);
 }

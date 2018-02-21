@@ -18,9 +18,9 @@
 package org.apache.commons.lang3.time;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @since 3.8
  */
-public class TimingRecordNode {
+public class TimingRecordNode<T> {
 
     /**
      * The format String for creating paths.
@@ -49,12 +49,12 @@ public class TimingRecordNode {
     /**
      * The tags associated with this timing.
      */
-    private String[] tags;
+    private List<T> tags = new ArrayList<>();
 
     /**
      * The child nodes of this node.
      */
-    private List<TimingRecordNode> children = new ArrayList<>();
+    private List<TimingRecordNode<T>> children = new ArrayList<>();
 
     /**
      * The {@code StopWatch} for this node.
@@ -71,10 +71,33 @@ public class TimingRecordNode {
      *
      * @param parentTimingPath the path of the parent, may be null
      * @param timingName the name of the timing
+     * @throws IllegalArgumentException if the timingName is null,empty or blank.
+     */
+    TimingRecordNode(String parentTimingPath, String timingName) {
+        if (StringUtils.isBlank(timingName)) {
+            throw new IllegalArgumentException("Argument name is missing");
+        }
+        this.timingName = timingName;
+
+        if (StringUtils.isNotBlank(parentTimingPath)) {
+            this.parentTimingPath = parentTimingPath;
+        }
+    }
+
+    /**
+     * <p>
+     * Constructor.
+     * </p>
+     * <p>
+     * Creates a new TimingRecordNode for a given parent name, with a given name.
+     * </p>
+     *
+     * @param parentTimingPath the path of the parent, may be null
+     * @param timingName the name of the timing
      * @param tags the tags to associate with this timing
      * @throws IllegalArgumentException if the timingName is null,empty or blank.
      */
-    TimingRecordNode(String parentTimingPath, String timingName, String... tags) {
+    TimingRecordNode(String parentTimingPath, String timingName, Collection<? extends T> tags) {
         if (StringUtils.isBlank(timingName)) {
             throw new IllegalArgumentException("Argument name is missing");
         }
@@ -84,7 +107,7 @@ public class TimingRecordNode {
             this.parentTimingPath = parentTimingPath;
         }
 
-        this.tags = tags;
+        this.tags.addAll(tags);
     }
 
     /**
@@ -155,12 +178,10 @@ public class TimingRecordNode {
     /**
      * The tags associated with this timing.
      *
-     * @return tags array
+     * @return tags collection
      */
-    public String[] getTags() {
-        // variable parameters are never null
-        // no need for null check here
-        return ArrayUtils.clone(tags);
+    public Iterable<T> getTags() {
+        return Collections.unmodifiableList(tags);
     }
 
     /**
@@ -184,8 +205,22 @@ public class TimingRecordNode {
      *
      * @return Iterable of the child nodes.
      */
-    public Iterable<TimingRecordNode> getChildren() {
+    public Iterable<TimingRecordNode<T>> getChildren() {
         return Collections.unmodifiableList(children);
+    }
+
+    /**
+     * Creates a new child node to this node.
+     * If the current node is not started, then this operation results in an
+     * {@code IllegalStateException}
+     *
+     * @param childName the name of the child
+     * @return the child node created
+     * @throws IllegalStateException if the current node is not started.
+     * @throws IllegalArgumentException if the node name is null or empty.
+     */
+    public TimingRecordNode<T> createChild(String childName)  throws IllegalStateException {
+        return createChild(childName,new ArrayList<T>());
     }
 
     /**
@@ -199,12 +234,12 @@ public class TimingRecordNode {
      * @throws IllegalStateException if the current node is not started.
      * @throws IllegalArgumentException if the node name is null or empty.
      */
-    public TimingRecordNode createChild(String childName, String... tags)
+    public TimingRecordNode<T> createChild(String childName, Collection<? extends T> tags)
         throws IllegalStateException {
         if (!stopWatch.isStarted()) {
             throw new IllegalStateException("Adding a child to a non-started parent");
         }
-        TimingRecordNode child = new TimingRecordNode(this.getPath(), childName, tags);
+        TimingRecordNode<T> child = new TimingRecordNode<>(this.getPath(), childName, tags);
         children.add(child);
         return child;
     }
@@ -217,9 +252,9 @@ public class TimingRecordNode {
      * @param level the level of this node.
      * @param visitor the visitor callback
      */
-    protected void visit(int level, TimingRecordNodeVisitor visitor) {
+    protected void visit(int level, TimingRecordNodeVisitor<T> visitor) {
         visitor.visitRecord(level, this);
-        for (TimingRecordNode child : children) {
+        for (TimingRecordNode<T> child : children) {
             child.visit(level + 1, visitor);
         }
     }

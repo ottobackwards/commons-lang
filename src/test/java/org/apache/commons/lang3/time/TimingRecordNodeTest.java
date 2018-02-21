@@ -20,6 +20,8 @@ package org.apache.commons.lang3.time;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 
 public class TimingRecordNodeTest {
 
@@ -32,29 +34,29 @@ public class TimingRecordNodeTest {
 
     @Test
     public void testNullParentDoesNotThrowException() {
-        TimingRecordNode theNode = new TimingRecordNode(null, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(null, NODE_NAME );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullNameThrowsException() {
-        TimingRecordNode theNode = new TimingRecordNode(null, null);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(null, null);
     }
 
     @Test
     public void testGetParentPath() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
         Assert.assertEquals(PARENT_PATH, theNode.getParentPath());
     }
 
     @Test
     public void testGetTimingName() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
         Assert.assertEquals(NODE_NAME, theNode.getTimingName());
     }
 
     @Test
     public void testIsRunning() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
         Assert.assertFalse(theNode.isRunning());
         theNode.start();
         Assert.assertTrue(theNode.isRunning());
@@ -62,14 +64,14 @@ public class TimingRecordNodeTest {
 
     @Test
     public void testStart() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
         theNode.start();
         Assert.assertTrue(theNode.isRunning());
     }
 
     @Test
     public void testStartStart() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
         theNode.start();
         theNode.start();
         Assert.assertTrue(theNode.isRunning());
@@ -77,7 +79,7 @@ public class TimingRecordNodeTest {
 
     @Test
     public void testStop() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
         theNode.start();
         theNode.stop();
         Assert.assertFalse(theNode.isRunning());
@@ -85,7 +87,7 @@ public class TimingRecordNodeTest {
 
     @Test(expected = IllegalStateException.class)
     public void testStopWithRunningChildrenThrowsException() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
         theNode.start();
         theNode.createChild("child").start();
         theNode.stop();
@@ -93,32 +95,32 @@ public class TimingRecordNodeTest {
 
     @Test
     public void testGetPath() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
         Assert.assertEquals(NODE_PATH, theNode.getPath());
     }
 
     @Test
     public void testGetPathNoParent() {
-        TimingRecordNode theNode = new TimingRecordNode(null, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(null, NODE_NAME);
         Assert.assertEquals(NODE_NAME, theNode.getPath());
     }
 
     @Test
     public void testCreateChild() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
         theNode.start();
         Assert.assertNotNull(theNode.createChild("child"));
     }
 
     @Test(expected = IllegalStateException.class)
     public void testCreateChildWhenNotStartedThrowsException() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
         theNode.createChild("child");
     }
 
     @Test
     public void testChildPath() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
         theNode.start();
         Assert.assertEquals(theNode.createChild("child").getPath(),
             String.format("%s/%s", NODE_PATH, "child"));
@@ -126,12 +128,12 @@ public class TimingRecordNodeTest {
 
     @Test
     public void testVisit() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
         theNode.start();
         theNode.createChild("child");
-        theNode.visit(0, new TimingRecordNodeVisitor() {
+        theNode.visit(0, new TimingRecordNodeVisitor<String>() {
             @Override
-            public void visitRecord(int level, TimingRecordNode node) {
+            public void visitRecord(int level, TimingRecordNode<String> node) {
                 if (level == 0) {
                     Assert.assertEquals(node.getTimingName(), NODE_NAME);
                 } else if (level == 1) {
@@ -145,34 +147,32 @@ public class TimingRecordNodeTest {
 
     @Test
     public void getStopWatch() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
         Assert.assertNotNull(theNode.getStopWatch());
     }
 
     @Test
     public void getTags() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME, TAG_ONE, TAG_TWO);
-        String[] tags = theNode.getTags();
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME, Arrays.asList(TAG_ONE, TAG_TWO));
+        Iterable<String> tags = theNode.getTags();
         Assert.assertNotNull(tags);
-        Assert.assertEquals(tags.length,2);
     }
 
     @Test
     public void getTagsWithNoTags() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME);
-        String[] tags = theNode.getTags();
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME);
+        Iterable<String> tags = theNode.getTags();
         Assert.assertNotNull(tags);
-        Assert.assertEquals(tags.length,0);
     }
 
     @Test
     public void getChildren() {
-        TimingRecordNode theNode = new TimingRecordNode(PARENT_PATH, NODE_NAME, TAG_ONE, TAG_TWO);
+        TimingRecordNode<String> theNode = new TimingRecordNode<>(PARENT_PATH, NODE_NAME, Arrays.asList(TAG_ONE, TAG_TWO));
         theNode.start();
         theNode.createChild(CHILD_NAME);
-        Iterable<TimingRecordNode> children = theNode.getChildren();
+        Iterable<TimingRecordNode<String>> children = theNode.getChildren();
         int count = 0;
-        for (TimingRecordNode child : children) {
+        for (TimingRecordNode<String> child : children) {
             count++;
         }
         Assert.assertEquals(count,1);

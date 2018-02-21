@@ -19,6 +19,8 @@ package org.apache.commons.lang3.time;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -34,7 +36,7 @@ import java.util.LinkedList;
  * </p>
  * <p>
  * {@code StackWatch} provides that functionality, allowing successive calls to
- * {@link StackWatch#startTiming(String, String...)} to track nested calls.
+ * {@link StackWatch#startTiming(String, Collection)} to track nested calls.
  * </p>
  * <p>
  * Each start provides a timing name and a parent timing name, thus providing context to the timing.
@@ -100,7 +102,7 @@ import java.util.LinkedList;
  *
  * @since 3.8
  */
-public class StackWatch {
+public class StackWatch<T> {
 
     /**
      * The default name for the root level timing if not provided
@@ -110,7 +112,7 @@ public class StackWatch {
     /**
      * The Deque used to track the timings
      */
-    private Deque<TimingRecordNode> deque = new LinkedList<>();
+    private Deque<TimingRecordNode<T>> deque = new LinkedList<>();
 
     /**
      * The name of the root node
@@ -122,7 +124,7 @@ public class StackWatch {
      * The root node represents the root of a tree structure, and contains all {@code TimingRecordNode}
      * instances.
      */
-    private TimingRecordNode rootNode;
+    private TimingRecordNode<T> rootNode;
 
     /**
      * <p>
@@ -171,7 +173,7 @@ public class StackWatch {
      * A root timing will be created named for the rootName and started.
      * </p>
      * <p>
-     * If not called before the first {@link  StackWatch#startTiming(String, String...)} call, then the
+     * If not called before the first {@link  StackWatch#startTiming(String, Collection)} call, then the
      * {@code StackWatch} will be started at that time.
      * </p>
      *
@@ -181,9 +183,92 @@ public class StackWatch {
         if (rootNode != null) {
             throw new IllegalStateException("StackWatch has already been started");
         }
-        rootNode = new TimingRecordNode(null, rootName);
+        rootNode = new TimingRecordNode<>(null, rootName, new ArrayList<T>());
         rootNode.start();
         deque.push(rootNode);
+    }
+
+    /**
+     * <p>
+     * Start a timing.  If {@link StackWatch#start()} has not been called, the {@code StackWatch} will be
+     * started.
+     * </p>
+     * <p>
+     * This may be called multiple times, before a {@link StackWatch#stopTiming()} call is made, if calls are nested,
+     * for example:
+     * </p>
+     * <pre>
+     *   <code>
+     *    private void functionOne(StackWatch watch) throws Exception {
+     *      watch.startTiming("One", "OneFunc");
+     *      functionOneOne(watch);
+     *      watch.stopTiming();
+     *    }
+     *
+     *    private void functionOneOne(StackWatch watch) throws Exception {
+     *      watch.startTiming("OneOne", "OneFunc");
+     *      functionOneTwo(watch);
+     *      watch.stopTiming();
+     *    }
+     *
+     *    private void functionOneTwo(StackWatch watch) throws Exception {
+     *      watch.startTiming("OneTwo", "OneFunc");
+     *      watch.stopTiming();
+     *    }
+     *   </code>
+     * </pre>
+     * <p>
+     * Starting a timing, when it's parent timing is not running results in an
+     * {@code IllegalStateException}.
+     * </p>
+     * <p>
+     * For example, this code, although contrived, would throw an {@code IllegalStateException}, because
+     * functionOne is not running:
+     * </p>
+     * <pre>
+     *   <code>
+     *    private void functionOne(StackWatch watch) throws Exception {
+     *      watch.startTiming("One", "OneFunc");
+     *      watch.visit(new TimingRecordNodeVisitor() {
+     *       {@literal @}Override
+     *        public void visitRecord(int level, TimingRecordNode node) {
+     *          node.getStopWatch().stop();
+     *        }
+     *      });
+     *      functionOneOne(watch);
+     *    }
+     *
+     *    private void functionOneOne(StackWatch watch) throws Exception {
+     *      watch.startTiming("OneOne", "OneFunc");
+     *      functionOneTwo(watch);
+     *      watch.stopTiming();
+     *    }
+     *   </code>
+     * </pre>
+     * <p>
+     * Starting a timing, when some number of timings have been started and all closed results in an
+     * {@code IllegalStateException}.
+     * </p>
+     * <p>
+     * For example:
+     * </p>
+     * <pre>
+     *  <code>
+     *    StackWatch watch = new StackWatch("testStackWatch");
+     *    watch.startTiming("Test");
+     *    functionOne(watch);
+     *    watch.stopTiming();
+     *    watch.stop();
+     *    watch.startTiming("More Test");
+     *  </code>
+     * </pre>
+     *
+     * @param name the name of this timing
+     * @throws IllegalStateException if the parent timing is not running or there is an attempt to start
+     *                               a new timing after creating a number of timings and closing them all.
+     */
+    public void startTiming(String name) {
+        startTiming(name, new ArrayList<T>());
     }
 
     /**
@@ -266,8 +351,8 @@ public class StackWatch {
      * @throws IllegalStateException if the parent timing is not running or there is an attempt to start
      *                               a new timing after creating a number of timings and closing them all.
      */
-    public void startTiming(String name, String... tags) {
-        final TimingRecordNode parentNode;
+    public void startTiming(String name, Collection<? extends T> tags) {
+        final TimingRecordNode<T> parentNode;
         // If the deque is empty, then the root needs to be added and started
         if (deque.isEmpty()) {
             // If it already exists, it means that all the timings were closed and a new timing was started.
@@ -292,7 +377,7 @@ public class StackWatch {
         }
 
         // request the current node to create a new child with this timing name and start it
-        TimingRecordNode node = parentNode.createChild(name, tags);
+        TimingRecordNode<T> node = parentNode.createChild(name, tags);
         node.start();
         // this node is now top of the stack
         deque.push(node);
@@ -352,7 +437,7 @@ public class StackWatch {
      *
      * @param visitor callback interface.
      */
-    public void visit(TimingRecordNodeVisitor visitor) {
+    public void visit(TimingRecordNodeVisitor<T> visitor) {
         rootNode.visit(0, visitor);
     }
 }
